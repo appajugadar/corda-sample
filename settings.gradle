@@ -1,1 +1,2 @@
-include 'java-source'
+include 'corda-core'
+include 'external-interface-spring-server'
