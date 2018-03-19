@@ -3,7 +3,9 @@ package com.cts.corda.etf.flow.depository;
 import co.paralleluniverse.fibers.Suspendable;
 import com.cts.corda.etf.contract.BuyContract;
 import com.cts.corda.etf.contract.SecurityStock;
+import com.cts.corda.etf.contract.SellContract;
 import com.cts.corda.etf.state.SecurityBuyState;
+import com.cts.corda.etf.state.SecuritySellState;
 import lombok.extern.slf4j.Slf4j;
 import net.corda.core.contracts.Command;
 import net.corda.core.contracts.PartyAndReference;
@@ -41,16 +43,17 @@ public class DepositoryExternalSellFlow extends FlowLogic<SignedTransaction> {
     @Suspendable
     @Override
     public SignedTransaction call() throws FlowException {
-        log.info("Called DepositoryExternalBuyFlow for quantity " + quantity + " securityName " + securityName);
+        log.info("Called DepositoryExternalSellFlow for quantity " + quantity + " securityName " + securityName);
         PartyAndReference issuer = this.getOurIdentity().ref(OpaqueBytes.of((securityName + quantity).getBytes()));
         SecurityStock.State etfTradeState = new SecurityStock.State(issuer, getOurIdentity(), securityName, quantity.longValue());
-        Party buyer = getPartyWithName(partyName);
+        Party seller = getPartyWithName(partyName);
         final Party notary = getServiceHub().getNetworkMapCache().getNotaryIdentities().get(0);
-        SecurityBuyState securityBuyState = new SecurityBuyState(quantity, securityName, SELL_STARTED, buyer, getOurIdentity());
+        SecuritySellState securitySellState = new SecuritySellState(quantity, securityName, SELL_STARTED, seller, getOurIdentity());
 
-        final Command<BuyContract.Commands.Create> txCommand = new Command<>(new BuyContract.Commands.Create(),
-                securityBuyState.getParticipants().stream().map(AbstractParty::getOwningKey).collect(Collectors.toList()));
-        final TransactionBuilder txBuilder = new TransactionBuilder(notary).withItems(new StateAndContract(securityBuyState,
+        final Command<SellContract.Commands.Create> txCommand = new Command<>(new SellContract.Commands.Create(),
+                securitySellState.getParticipants().stream().map(AbstractParty::getOwningKey).collect(Collectors.toList()));
+
+        final TransactionBuilder txBuilder = new TransactionBuilder(notary).withItems(new StateAndContract(securitySellState,
                 SELL_SECURITY_CONTRACT_ID), txCommand);
 
         log.info("etfTradeState -->> " + etfTradeState);

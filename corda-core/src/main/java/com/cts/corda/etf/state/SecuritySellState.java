@@ -70,7 +70,7 @@ public class SecuritySellState implements LinearState, QueryableState {
 
     @Override
     public List<AbstractParty> getParticipants() {
-        return Arrays.asList(depository, seller);
+        return Arrays.asList(depository);
     }
 
     @Override

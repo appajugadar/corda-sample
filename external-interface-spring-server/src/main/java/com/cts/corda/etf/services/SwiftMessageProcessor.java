@@ -25,13 +25,23 @@ public class SwiftMessageProcessor {
         securityOrder.setCounterPartyBic(mt.getSender());
         log.info("Sender: " + mt.getSender() + "    Receiver: " + mt.getReceiver());
         Field20 ref = mt.getField20();
+
         log.info(Field.getLabel(ref.getName(), mt.getMessageType(), null) + ": " + ref.getComponent(Field20.REFERENCE));
         Field32A f = mt.getField32A();
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd");
         log.info("Value Date: " + sdf.format(f.getDateAsCalendar().getTime()));
         securityOrder.setQuantity(Integer.parseInt(f.getAmount().replaceAll(",", "")));
-        securityOrder.setSecurityName("OLI");
-        securityOrder.setBuySellIndicator("SELL");
+
+        log.info("getField71A().getValue(): " + mt.getField71A().getValue());
+        String securityName = mt.getField23B().getValue();
+        log.info("securityName  " + securityName);
+        securityOrder.setSecurityName(securityName);
+        if(mt.getField71A().getValue().equals("BUY")){
+            securityOrder.setBuySellIndicator("BUY");
+        }else{
+            securityOrder.setBuySellIndicator("SELL");
+        }
+
         return securityOrder;
     }
 

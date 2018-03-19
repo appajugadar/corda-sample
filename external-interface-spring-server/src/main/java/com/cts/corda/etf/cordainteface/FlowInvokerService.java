@@ -44,16 +44,16 @@ public class FlowInvokerService {
 
     public String initiateBuySellRequest(SecurityOrder securityOrder) throws ExecutionException, InterruptedException {
         String requesterPartyName = getPartyNameFromBic(securityOrder.getCounterPartyBic());
-        log.info("requesterPartyName " + requesterPartyName);
 
         FlowProgressHandle<SignedTransaction> flowHandle = null;
         if (securityOrder.getBuySellIndicator().equals("BUY")) {
+            log.info("Initiating buy flow with Quantity {} getSecurityName {} requesterPartyName {}" + securityOrder.getQuantity(), securityOrder.getSecurityName(), requesterPartyName);
             flowHandle = rpc.getProxy().startTrackedFlowDynamic(DepositoryExternalBuyFlow.class, securityOrder.getQuantity(), securityOrder.getSecurityName(), requesterPartyName);
         } else {
+            log.info("Initiating sell flow with Quantity {} getSecurityName {} requesterPartyName {}" + securityOrder.getQuantity(), securityOrder.getSecurityName(), requesterPartyName);
             flowHandle = rpc.getProxy().startTrackedFlowDynamic(DepositoryExternalSellFlow.class, securityOrder.getQuantity(), securityOrder.getSecurityName(), requesterPartyName);
         }
 
-        log.info("requesterPartyName " + requesterPartyName);
         flowHandle.getProgress().subscribe(evt -> log.info(">> %s\n", evt));
         final SignedTransaction result = flowHandle.getReturnValue().get();
         final String msg = String.format("Transaction id %s committed to ledger.\n", result.getId());
