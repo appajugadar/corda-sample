@@ -70,3 +70,8 @@ http://localhost:10010/api/rest/cp-balance
 JVM Param for testcase
 
 -ea -javaagent:../lib/quasar.jar
+
+
+Send swift message
+http://localhost:8080/send_swift.html
+Sample swift message : https://github.com/appajugadar/corda-sample/blob/master/swift-sample.txt
