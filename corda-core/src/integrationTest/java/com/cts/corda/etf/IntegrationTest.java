@@ -86,10 +86,10 @@ public class IntegrationTest {
                         CordaFuture<WebserverHandle> depositoryHandle1 = dsl.startWebserver(depositoryHandle);
                         CordaFuture<WebserverHandle> regulatorHandle1 = dsl.startWebserver(regulatorHandle);
 
-                        log.info("ap1Handle address: " + ap1Handle1.get().getListenAddress());
-                        log.info("ap2Handle address: " + ap2Handle1.get().getListenAddress());
-                        log.info("depositoryHandle address: " + depositoryHandle1.get().getListenAddress());
-                        log.info("regulatorHandle address: " + regulatorHandle1.get().getListenAddress());
+                        log.info("ap1Handle address: " + ap1Handle1.get().getListenAddress()+" ap1Handle "+ap1Handle.getRpc().nodeInfo());
+                        log.info("ap2Handle address: " + ap2Handle1.get().getListenAddress()+" ap2Handle "+ap2Handle.getRpc().nodeInfo());
+                        log.info("depositoryHandle address: " + depositoryHandle1.get().getListenAddress()+" depositoryHandle "+depositoryHandle.getRpc().nodeInfo());
+                        log.info("regulatorHandle address: " + regulatorHandle1.get().getListenAddress()+" depositoryHandle "+regulatorHandle.getRpc().nodeInfo());
 
                         dsl.waitForAllNodesToFinish();
 

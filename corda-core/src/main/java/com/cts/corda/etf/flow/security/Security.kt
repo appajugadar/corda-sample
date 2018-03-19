@@ -6,8 +6,8 @@ import java.math.BigDecimal
 
 @CordaSerializable
 data class Security(val commodityCode: String,
-                     val displayName: String,
-                     val defaultFractionDigits: Int = 0) : TokenizableAssetInfo {
+                    val displayName: String,
+                    val defaultFractionDigits: Int = 0) : TokenizableAssetInfo {
     override val displayTokenSize: BigDecimal
         get() = BigDecimal.ONE.scaleByPowerOfTen(-defaultFractionDigits)
 
@@ -17,7 +17,6 @@ data class Security(val commodityCode: String,
                 Pair("FCOJ", Security("FCOJ", "Frozen concentrated orange juice"))
         )
 
-        fun getInstance(commodityCode: String): com.cts.corda.etf.flow.security.Security?
-                = registry[commodityCode]
+        fun getInstance(commodityCode: String): com.cts.corda.etf.flow.security.Security? = registry[commodityCode]
     }
 }

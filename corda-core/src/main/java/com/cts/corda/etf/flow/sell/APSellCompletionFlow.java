@@ -2,8 +2,8 @@ package com.cts.corda.etf.flow.sell;
 
 import co.paralleluniverse.fibers.Suspendable;
 import com.cts.corda.etf.contract.SecurityStock;
-import com.cts.corda.etf.flow.regulator.ReportToRegulatorFlow;
 import com.cts.corda.etf.flow.depository.DepositoryBuyFlow;
+import com.cts.corda.etf.flow.regulator.ReportToRegulatorFlow;
 import com.cts.corda.etf.state.SecuritySellState;
 import lombok.extern.slf4j.Slf4j;
 import net.corda.core.contracts.ContractState;
@@ -22,6 +22,7 @@ import static net.corda.core.contracts.ContractsDSL.requireThat;
 public class APSellCompletionFlow extends FlowLogic<SignedTransaction> {
 
     private final FlowSession flowSession;
+
     public APSellCompletionFlow(FlowSession flowSession) {
         this.flowSession = flowSession;
         log.info("Inside APSellCompletionFlow called by " + flowSession.getCounterparty());
@@ -66,7 +67,7 @@ public class APSellCompletionFlow extends FlowLogic<SignedTransaction> {
                 require.using("This must be an SecuritySell transaction.", output instanceof SecuritySellState);
                 SecuritySellState newSellState = (SecuritySellState) output;
                 log.info("Adding new state to o/p");
-             //   require.using("I won't accept SecurityBuy with a quantity over 100.", newSellState.getQuantity() <= 100);
+                //   require.using("I won't accept SecurityBuy with a quantity over 100.", newSellState.getQuantity() <= 100);
                 return null;
             });
         }

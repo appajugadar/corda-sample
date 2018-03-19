@@ -51,7 +51,7 @@ public class ExternalRestApi {
 
     @RequestMapping("/sendCashIssueOrder")
     public void sendCashIssueOrder(@RequestParam(value = "amount") Integer amount,
-                          @RequestParam(value = "currency") String currency) {
+                                   @RequestParam(value = "currency") String currency) {
         orderSender.send(new CashIssueOrder(amount, currency));
     }
 

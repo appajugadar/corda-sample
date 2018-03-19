@@ -23,17 +23,16 @@ open class SecurityContract : OnLedgerAsset<Security, SecurityContract.Commands,
     /** A state representing a security claim against some party */
     data class State(
             override val amount: Amount<Issued<Security>>,
-
             /** There must be a MoveCommand signed by this key to claim the amount */
             override val owner: AbstractParty
     ) : FungibleAsset<Security> {
         constructor(deposit: PartyAndReference, amount: Amount<Security>, owner: AbstractParty)
                 : this(Amount(amount.quantity, Issued(deposit, amount.token)), owner)
+
         override val exitKeys: Set<PublicKey> = Collections.singleton(owner.owningKey)
         override val participants = listOf(owner)
 
-        override fun withNewOwnerAndAmount(newAmount: Amount<Issued<Security>>, newOwner: AbstractParty): FungibleAsset<Security>
-                = copy(amount = amount.copy(newAmount.quantity), owner = newOwner)
+        override fun withNewOwnerAndAmount(newAmount: Amount<Issued<Security>>, newOwner: AbstractParty): FungibleAsset<Security> = copy(amount = amount.copy(newAmount.quantity), owner = newOwner)
 
         override fun toString() = "Security($amount at ${amount.token.issuer} owned by $owner)"
 
@@ -76,14 +75,15 @@ open class SecurityContract : OnLedgerAsset<Security, SecurityContract.Commands,
             val party = issuer.party
 
             requireThat {
-                "there are no zero sized outputs" using ( outputs.none { it.amount.quantity == 0L } )
+                "there are no zero sized outputs" using (outputs.none { it.amount.quantity == 0L })
             }
 
             val issueCommand = tx.commands.select<Commands.Issue>().firstOrNull()
             if (issueCommand != null) {
                 verifyIssueCommand(inputs, outputs, tx, issueCommand, security, issuer)
             } else {
-                val inputAmount = inputs.sumSecurities() ?: throw IllegalArgumentException("there is at least one security input for this group")
+                val inputAmount = inputs.sumSecurities()
+                        ?: throw IllegalArgumentException("there is at least one security input for this group")
                 val outputAmount = outputs.sumSecuritiesOrZero(Issued(issuer, security))
 
                 // If we want to remove security from the ledger, that must be signed for by the issuer.
@@ -92,7 +92,7 @@ open class SecurityContract : OnLedgerAsset<Security, SecurityContract.Commands,
                 val amountExitingLedger = exitCommand?.value?.amount ?: Amount(0, Issued(issuer, security))
 
                 requireThat {
-                    "there are no zero sized inputs" using ( inputs.none { it.amount.quantity == 0L } )
+                    "there are no zero sized inputs" using (inputs.none { it.amount.quantity == 0L })
                     "for reference ${issuer.reference} at issuer ${party.nameOrNull()} the amounts balance" using
                             (inputAmount == outputAmount + amountExitingLedger)
                 }
@@ -118,24 +118,20 @@ open class SecurityContract : OnLedgerAsset<Security, SecurityContract.Commands,
         }
     }
 
-    override fun extractCommands(commands: Collection<CommandWithParties<CommandData>>): List<CommandWithParties<Commands>>
-            = commands.select<Commands>()
+    override fun extractCommands(commands: Collection<CommandWithParties<CommandData>>): List<CommandWithParties<Commands>> = commands.select<Commands>()
 
     /**
      * Puts together an issuance transaction from the given template, that starts out being owned by the given pubkey.
      */
-    fun generateIssue(tx: TransactionBuilder, tokenDef: Issued<Security>, pennies: Long, owner: AbstractParty, notary: Party)
-            = generateIssue(tx, Amount(pennies, tokenDef), owner, notary)
+    fun generateIssue(tx: TransactionBuilder, tokenDef: Issued<Security>, pennies: Long, owner: AbstractParty, notary: Party) = generateIssue(tx, Amount(pennies, tokenDef), owner, notary)
 
     /**
      * Puts together an issuance transaction for the specified amount that starts out being owned by the given pubkey.
      */
-    fun generateIssue(tx: TransactionBuilder, amount: Amount<Issued<Security>>, owner: AbstractParty, notary: Party)
-            = generateIssue(tx, TransactionState(State(amount, owner), SECURITY_PROGRAM_ID, notary), Commands.Issue())
+    fun generateIssue(tx: TransactionBuilder, amount: Amount<Issued<Security>>, owner: AbstractParty, notary: Party) = generateIssue(tx, TransactionState(State(amount, owner), SECURITY_PROGRAM_ID, notary), Commands.Issue())
 
 
-    public override fun deriveState(txState: TransactionState<State>, amount: Amount<Issued<Security>>, owner: AbstractParty)
-            = txState.copy(data = txState.data.copy(amount = amount, owner = owner))
+    public override fun deriveState(txState: TransactionState<State>, amount: Amount<Issued<Security>>, owner: AbstractParty) = txState.copy(data = txState.data.copy(amount = amount, owner = owner))
 
     override fun generateExitCommand(amount: Amount<Issued<Security>>) = Commands.Exit(amount)
     override fun generateMoveCommand() = Commands.Move()

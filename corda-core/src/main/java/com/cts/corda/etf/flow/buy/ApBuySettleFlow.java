@@ -1,28 +1,22 @@
 package com.cts.corda.etf.flow.buy;
 
 import co.paralleluniverse.fibers.Suspendable;
-import com.cts.corda.etf.contract.BuyContract;
 import com.cts.corda.etf.flow.regulator.ReportToRegulatorFlow;
 import com.cts.corda.etf.flow.sell.APSellCompletionFlow;
 import com.cts.corda.etf.state.SecurityBuyState;
-import com.google.common.collect.Sets;
 import lombok.extern.slf4j.Slf4j;
-import net.corda.core.contracts.*;
+import net.corda.core.contracts.Amount;
+import net.corda.core.contracts.ContractState;
+import net.corda.core.contracts.StateAndRef;
 import net.corda.core.flows.*;
-import net.corda.core.identity.AbstractParty;
-import net.corda.core.identity.Party;
 import net.corda.core.transactions.SignedTransaction;
-import net.corda.core.transactions.TransactionBuilder;
 import net.corda.core.utilities.ProgressTracker;
 import net.corda.finance.flows.CashPaymentFlow;
 
 import java.util.Currency;
 import java.util.HashSet;
 import java.util.List;
-import java.util.stream.Collectors;
 
-import static com.cts.corda.etf.contract.BuyContract.BUY_SECURITY_CONTRACT_ID;
-import static com.cts.corda.etf.util.Constants.BUY_MATCHED;
 import static net.corda.core.contracts.ContractsDSL.requireThat;
 
 @InitiatedBy(APSellCompletionFlow.class)

@@ -1,6 +1,7 @@
 package com.cts.corda.etf.cordainteface;
 
-import com.cts.corda.etf.flow.buy.APBuyFlow;
+import com.cts.corda.etf.flow.depository.DepositoryExternalBuyFlow;
+import com.cts.corda.etf.flow.depository.DepositoryExternalSellFlow;
 import com.cts.corda.etf.util.SecurityOrder;
 import lombok.extern.slf4j.Slf4j;
 import net.corda.core.contracts.Amount;
@@ -14,16 +15,12 @@ import net.corda.finance.flows.AbstractCashFlow;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import javax.ws.rs.core.Response;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Currency;
 import java.util.List;
 import java.util.Properties;
 import java.util.concurrent.ExecutionException;
-
-import static javax.ws.rs.core.Response.Status.BAD_REQUEST;
-import static javax.ws.rs.core.Response.Status.CREATED;
 
 @Service
 @Slf4j
@@ -46,18 +43,21 @@ public class FlowInvokerService {
     }
 
     public String initiateBuySellRequest(SecurityOrder securityOrder) throws ExecutionException, InterruptedException {
-        final List<Party> notaries = rpc.getProxy().notaryIdentities();
         String requesterPartyName = getPartyNameFromBic(securityOrder.getCounterPartyBic());
-        Party requesterParty = getPartyWithName(new CordaX500Name(requesterPartyName, "London", "GB"));
-        log.info("requesterParty "+requesterParty+" requesterPartyName "+requesterPartyName);
-        Party depositoryParty = getPartyWithName(new CordaX500Name("DTCC", "London", "GB"));
+        log.info("requesterPartyName " + requesterPartyName);
 
-        /*FlowProgressHandle<SignedTransaction> flowHandle = rpc.getProxy().startTrackedFlowDynamic(APBuyFlow.class, securityOrder.getQuantity(), securityOrder.getSecurityName(), depositoryParty);
+        FlowProgressHandle<SignedTransaction> flowHandle = null;
+        if (securityOrder.getBuySellIndicator().equals("BUY")) {
+            flowHandle = rpc.getProxy().startTrackedFlowDynamic(DepositoryExternalBuyFlow.class, securityOrder.getQuantity(), securityOrder.getSecurityName(), requesterPartyName);
+        } else {
+            flowHandle = rpc.getProxy().startTrackedFlowDynamic(DepositoryExternalSellFlow.class, securityOrder.getQuantity(), securityOrder.getSecurityName(), requesterPartyName);
+        }
+
+        log.info("requesterPartyName " + requesterPartyName);
         flowHandle.getProgress().subscribe(evt -> log.info(">> %s\n", evt));
-        final SignedTransaction result = flowHandle.getReturnValue().get();*/
-        //final String msg = String.format("Transaction id %s committed to ledger.\n", result.getId());
-        return "";
-
+        final SignedTransaction result = flowHandle.getReturnValue().get();
+        final String msg = String.format("Transaction id %s committed to ledger.\n", result.getId());
+        return msg;
     }
 
 
@@ -65,10 +65,10 @@ public class FlowInvokerService {
         return rpc.getProxy().wellKnownPartyFromX500Name(x500Name);//;partiesFromName(name, false).toArray()[0];
     }
 
-    String getPartyNameFromBic(String counterPartyBic){
+    String getPartyNameFromBic(String counterPartyBic) {
         Properties props = new Properties();
         try {
-            try(InputStream resourceStream = Thread.currentThread().getContextClassLoader().getResourceAsStream("config.properties")) {
+            try (InputStream resourceStream = Thread.currentThread().getContextClassLoader().getResourceAsStream("swiftbic-partyname.properties")) {
                 props.load(resourceStream);
             }
         } catch (IOException e) {

@@ -15,6 +15,7 @@ import net.corda.core.transactions.TransactionBuilder;
 public class MoveSecurityFlow extends FlowLogic<SignedTransaction> {
     private final StateAndRef stateAndRef;
     private final Party receiverParty;
+
     public MoveSecurityFlow(StateAndRef stateAndRef, Party receiverParty) {
         this.stateAndRef = stateAndRef;
         this.receiverParty = receiverParty;

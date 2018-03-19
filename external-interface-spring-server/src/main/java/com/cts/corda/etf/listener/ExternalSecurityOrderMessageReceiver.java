@@ -2,7 +2,6 @@ package com.cts.corda.etf.listener;
 
 import com.cts.corda.etf.cordainteface.FlowInvokerService;
 import com.cts.corda.etf.services.SwiftMessageProcessor;
-import com.cts.corda.etf.util.CashIssueOrder;
 import com.cts.corda.etf.util.SecurityOrder;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,7 +17,6 @@ import javax.jms.Session;
 import java.io.IOException;
 import java.util.concurrent.ExecutionException;
 
-import static com.cts.corda.etf.util.Constants.ORDER_QUEUE;
 import static com.cts.corda.etf.util.Constants.SECURITY_ORDER_QUEUE;
 
 
@@ -50,7 +48,6 @@ public class ExternalSecurityOrderMessageReceiver {
             e.printStackTrace();
         }
     }
-
 
 
 }

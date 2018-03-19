@@ -9,7 +9,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.io.ByteArrayInputStream;
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.text.SimpleDateFormat;
@@ -24,18 +23,17 @@ public class SwiftMessageProcessor {
         MT103 mt = MT103.parse(inputStream);
         SecurityOrder securityOrder = new SecurityOrder();
         securityOrder.setCounterPartyBic(mt.getSender());
-        log.info("Sender: "+mt.getSender()+"    Receiver: "+mt.getReceiver());
+        log.info("Sender: " + mt.getSender() + "    Receiver: " + mt.getReceiver());
         Field20 ref = mt.getField20();
         log.info(Field.getLabel(ref.getName(), mt.getMessageType(), null) + ": " + ref.getComponent(Field20.REFERENCE));
         Field32A f = mt.getField32A();
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd");
-        log.info("Value Date: "+sdf.format(f.getDateAsCalendar().getTime()));
-        securityOrder.setQuantity(Integer.parseInt(f.getAmount()));
+        log.info("Value Date: " + sdf.format(f.getDateAsCalendar().getTime()));
+        securityOrder.setQuantity(Integer.parseInt(f.getAmount().replaceAll(",", "")));
         securityOrder.setSecurityName("OLI");
         securityOrder.setBuySellIndicator("SELL");
         return securityOrder;
     }
-
 
 
 }

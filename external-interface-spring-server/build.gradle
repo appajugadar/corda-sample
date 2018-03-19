@@ -46,7 +46,10 @@ dependencies {
     compile "com.fasterxml.jackson.core:jackson-databind:2.9.4"
     compile "org.springframework.boot:spring-boot-starter-log4j2:2.0.0.RELEASE"
     compile "org.apache.logging.log4j:log4j-web:2.7"
+    compile "commons-lang:commons-lang:2.6"
     compile name: 'pw-swift-core-SRU2017-7.9.3'
+    
+    
     testCompile "net.corda:corda-node-driver:$corda_release_version"
     testCompile "org.jetbrains.kotlin:kotlin-test:$kotlin_version"
     testCompile "junit:junit:$junit_version"

@@ -1,8 +1,8 @@
 package com.cts.corda.etf.flow.buy;
 
 import co.paralleluniverse.fibers.Suspendable;
-import com.cts.corda.etf.flow.regulator.ReportToRegulatorFlow;
 import com.cts.corda.etf.flow.depository.DepositorySellFlow;
+import com.cts.corda.etf.flow.regulator.ReportToRegulatorFlow;
 import com.cts.corda.etf.state.SecurityBuyState;
 import lombok.extern.slf4j.Slf4j;
 import net.corda.core.contracts.Amount;
@@ -63,7 +63,7 @@ public class APBuyCompletionFlow extends FlowLogic<String> {
                 require.using("This must be an SecurityBuy transaction.", output instanceof SecurityBuyState);
                 SecurityBuyState newSellState = (SecurityBuyState) output;
                 log.info("Adding new state to o/p");
-               // require.using("I won't accept SecurityBuy with a quantity over 100.", newSellState.getQuantity() <= 100);
+                // require.using("I won't accept SecurityBuy with a quantity over 100.", newSellState.getQuantity() <= 100);
                 return null;
             });
         }

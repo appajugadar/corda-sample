@@ -12,6 +12,7 @@ import net.corda.core.transactions.SignedTransaction;
 import net.corda.core.transactions.TransactionBuilder;
 import net.corda.core.utilities.OpaqueBytes;
 import net.corda.core.utilities.ProgressTracker;
+
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -44,7 +45,7 @@ public class FungibleSecurityIssueFlow extends FlowLogic<SignedTransaction> {
     private String commodityDisplayName;
     private Long quantity;
 
-    public FungibleSecurityIssueFlow(Long quantity, String commodityCode,String commodityDisplayName) {
+    public FungibleSecurityIssueFlow(Long quantity, String commodityCode, String commodityDisplayName) {
         super();
         this.quantity = quantity;
         this.commodityCode = commodityCode;
@@ -64,12 +65,12 @@ public class FungibleSecurityIssueFlow extends FlowLogic<SignedTransaction> {
     @Suspendable
     @Override
     public SignedTransaction call() throws FlowException {
-        log.info("Called CommodityIssueFlow for faceValue " + quantity + " commodityDisplayName " + commodityDisplayName+"  commodityCode "+commodityCode);
+        log.info("Called CommodityIssueFlow for faceValue " + quantity + " commodityDisplayName " + commodityDisplayName + "  commodityCode " + commodityCode);
 
         new testfun().main1();
 
-        PartyAndReference issuer = this.getOurIdentity().ref(OpaqueBytes.of((commodityCode+commodityDisplayName+quantity).getBytes()));
-        Security commodity = new Security(commodityCode, commodityDisplayName,0 );
+        PartyAndReference issuer = this.getOurIdentity().ref(OpaqueBytes.of((commodityCode + commodityDisplayName + quantity).getBytes()));
+        Security commodity = new Security(commodityCode, commodityDisplayName, 0);
         Amount<Issued<Security>> commodityAmount = new Amount(quantity, new Issued<>(issuer, commodity));
 
         SecurityContract.State state = new SecurityContract.State(commodityAmount, getOurIdentity());
@@ -92,17 +93,17 @@ public class FungibleSecurityIssueFlow extends FlowLogic<SignedTransaction> {
         log.info("Before verify TX");
         //    txBuilder.verify(getServiceHub());
 
-        Set ss = new SecurityContract().generateIssue(txBuilder, commodityAmount, getOurIdentity(), notary );
-        log.info("txBuilder.commands() "+txBuilder.commands());
-   //     txBuilder.addCommand(txCommand);
-        for (Command command :txBuilder.commands()
+        Set ss = new SecurityContract().generateIssue(txBuilder, commodityAmount, getOurIdentity(), notary);
+        log.info("txBuilder.commands() " + txBuilder.commands());
+        //     txBuilder.addCommand(txCommand);
+        for (Command command : txBuilder.commands()
                 ) {
-            log.info("txBuilder.commands() "+command.toString());
-            log.info("txBuilder.commands().value "+command.getValue());
+            log.info("txBuilder.commands() " + command.toString());
+            log.info("txBuilder.commands().value " + command.getValue());
         }
 
 
-        log.info("txBuilder.commands() "+txBuilder.commands().size());
+        log.info("txBuilder.commands() " + txBuilder.commands().size());
         // step 4 Sign the transaction.
         progressTracker.setCurrentStep(SIGNING);
         final SignedTransaction partSignedTx = getServiceHub().signInitialTransaction(txBuilder);

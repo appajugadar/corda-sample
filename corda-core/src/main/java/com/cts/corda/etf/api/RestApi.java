@@ -28,7 +28,6 @@ import net.corda.core.messaging.FlowProgressHandle;
 import net.corda.core.node.NodeInfo;
 import net.corda.core.transactions.SignedTransaction;
 import net.corda.core.utilities.OpaqueBytes;
-import net.corda.finance.contracts.asset.CommodityContract;
 import net.corda.finance.flows.AbstractCashFlow;
 
 import javax.ws.rs.GET;
@@ -101,7 +100,7 @@ public class RestApi {
             if (securityBalanceMap.containsKey(etfTradeState.getSecurityName())) {
                 SecurityBalance balance = securityBalanceMap.get(etfTradeState.getSecurityName());
                 balance.setQuantity(balance.getQuantity() + etfTradeState.getQuantity());
-            }else{
+            } else {
                 securityBalanceMap.put(etfTradeState.getSecurityName(), new SecurityBalance(etfTradeState.getSecurityName(), etfTradeState.getQuantity()));
             }
         }
@@ -115,12 +114,12 @@ public class RestApi {
     @Path("cash-balance")
     @Produces(MediaType.APPLICATION_JSON)
     public List<CashBalance> cashBalances() {
-        Map<Currency, Amount<Currency>> balanceMap =  net.corda.finance.contracts.GetBalances.getCashBalances(rpcOps);
+        Map<Currency, Amount<Currency>> balanceMap = net.corda.finance.contracts.GetBalances.getCashBalances(rpcOps);
         List<CashBalance> balances = new ArrayList<>();
-        for (Amount<Currency> cash:balanceMap.values()) {
+        for (Amount<Currency> cash : balanceMap.values()) {
             CashBalance cashBalance = new CashBalance(cash.getToken().getCurrencyCode(), cash.getQuantity());
             balances.add(cashBalance);
-            log.info("cashBalance "+cashBalance);
+            log.info("cashBalance " + cashBalance);
         }
         return balances;
     }
@@ -190,7 +189,7 @@ public class RestApi {
         if (notaries.isEmpty()) {
             throw new IllegalStateException("Could not find a notary.");
         }
-        log.info("Issue self cash : amount " + amount+"   currency "+currency);
+        log.info("Issue self cash : amount " + amount + "   currency " + currency);
 
 
         FlowHandle<AbstractCashFlow.Result> flowHandle = rpcOps.startFlowDynamic(net.corda.finance.flows.CashIssueFlow.class,
@@ -284,7 +283,7 @@ public class RestApi {
     @GET
     @Path("self-issue-commodity")
     public Response selfIssueCommodity(@QueryParam(value = "quantity") Integer quantity, @QueryParam(value = "commodityCode") String commodityCode, @QueryParam(value = "commodityDisplayName") String commodityDisplayName) throws ExecutionException, InterruptedException {
-        log.info("Received resp from flow quantity {}  commodityCode {}  commodityDisplayName {}" + quantity,commodityCode,commodityDisplayName );
+        log.info("Received resp from flow quantity {}  commodityCode {}  commodityDisplayName {}" + quantity, commodityCode, commodityDisplayName);
         final List<Party> notaries = rpcOps.notaryIdentities();
         if (notaries.isEmpty()) {
             throw new IllegalStateException("Could not find a notary.");
@@ -300,7 +299,7 @@ public class RestApi {
     @GET
     @Path("self-issue-com")
     public Response selfIssueCom(@QueryParam(value = "quantity") Integer quantity, @QueryParam(value = "commodityCode") String commodityCode, @QueryParam(value = "commodityDisplayName") String commodityDisplayName) throws ExecutionException, InterruptedException {
-        log.info("Received resp from flow quantity {}  commodityCode {}  commodityDisplayName {}" + quantity,commodityCode,commodityDisplayName );
+        log.info("Received resp from flow quantity {}  commodityCode {}  commodityDisplayName {}" + quantity, commodityCode, commodityDisplayName);
         final List<Party> notaries = rpcOps.notaryIdentities();
         if (notaries.isEmpty()) {
             throw new IllegalStateException("Could not find a notary.");
@@ -311,13 +310,13 @@ public class RestApi {
 
 
         Party ap1 = getPartyWithName(new CordaX500Name("AP1", "London", "GB"));
-        PartyAndReference issuer = ap1.ref(OpaqueBytes.of((commodityCode+commodityDisplayName+quantity).getBytes()));
-        Security commodity = new Security(commodityCode, commodityDisplayName,0 );
+        PartyAndReference issuer = ap1.ref(OpaqueBytes.of((commodityCode + commodityDisplayName + quantity).getBytes()));
+        Security commodity = new Security(commodityCode, commodityDisplayName, 0);
         Amount<Issued<Security>> commodityAmount = new Amount(quantity, new Issued<>(issuer, commodity));
 
         FlowHandle<SignedTransaction> flowHandle = rpcOps.startFlowDynamic(SecurityTokenIssueFlow.class,
                 commodityAmount,
-                OpaqueBytes.of((commodityCode+commodityDisplayName+quantity).getBytes()),
+                OpaqueBytes.of((commodityCode + commodityDisplayName + quantity).getBytes()),
                 notaries.get(0));
 
         log.info("Received resp from flow " + flowHandle.getReturnValue());

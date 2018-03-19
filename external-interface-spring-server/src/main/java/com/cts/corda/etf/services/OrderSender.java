@@ -1,7 +1,6 @@
 package com.cts.corda.etf.services;
 
 import com.cts.corda.etf.util.CashIssueOrder;
-import com.cts.corda.etf.util.SecurityOrder;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jms.core.JmsTemplate;
