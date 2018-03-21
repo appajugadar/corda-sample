@@ -88,8 +88,11 @@ public class SecurityBuyState implements LinearState, QueryableState {
 
     @Override
     public List<AbstractParty> getParticipants() {
-        return Arrays.asList(depository);
-        //return Arrays.asList(depository, buyer);
+        if(buyer.getName().getOrganisation().contains("AP")){
+            return Arrays.asList(depository, buyer);
+        }else{
+            return Arrays.asList(depository);
+        }
     }
 
     @Override

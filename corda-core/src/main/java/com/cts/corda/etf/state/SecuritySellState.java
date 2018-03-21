@@ -70,7 +70,11 @@ public class SecuritySellState implements LinearState, QueryableState {
 
     @Override
     public List<AbstractParty> getParticipants() {
-        return Arrays.asList(depository);
+        if(seller.getName().getOrganisation().contains("AP")){
+            return Arrays.asList(depository, seller);
+        }else{
+            return Arrays.asList(depository);
+        }
     }
 
     @Override
