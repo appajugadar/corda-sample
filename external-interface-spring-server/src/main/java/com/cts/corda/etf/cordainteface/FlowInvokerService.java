@@ -1,7 +1,6 @@
 package com.cts.corda.etf.cordainteface;
 
-import com.cts.corda.etf.flow.depository.DepositoryExternalBuyFlow;
-import com.cts.corda.etf.flow.depository.DepositoryExternalSellFlow;
+import com.cts.corda.etf.flow.depository.*;
 import com.cts.corda.etf.util.SecurityOrder;
 import lombok.extern.slf4j.Slf4j;
 import net.corda.core.contracts.Amount;
@@ -43,14 +42,18 @@ public class FlowInvokerService {
     }
 
     public String initiateBuySellRequest(SecurityOrder securityOrder) throws ExecutionException, InterruptedException {
+        log.info("SecurityOrder.CounterPartyBic {} ",securityOrder.getCounterPartyBic());
         String requesterPartyName = getPartyNameFromBic(securityOrder.getCounterPartyBic());
+        if(requesterPartyName==null){
+            requesterPartyName="Bank A";
+        }
 
         FlowProgressHandle<SignedTransaction> flowHandle = null;
         if (securityOrder.getBuySellIndicator().equals("BUY")) {
-            log.info("Initiating buy flow with Quantity {} getSecurityName {} requesterPartyName {}" + securityOrder.getQuantity(), securityOrder.getSecurityName(), requesterPartyName);
+            log.info("Initiating buy flow with Quantity {} getSecurityName {} RequesterPartyName {}", securityOrder.getQuantity(), securityOrder.getSecurityName(), requesterPartyName);
             flowHandle = rpc.getProxy().startTrackedFlowDynamic(DepositoryExternalBuyFlow.class, securityOrder.getQuantity(), securityOrder.getSecurityName(), requesterPartyName);
         } else {
-            log.info("Initiating sell flow with Quantity {} getSecurityName {} requesterPartyName {}" + securityOrder.getQuantity(), securityOrder.getSecurityName(), requesterPartyName);
+            log.info("Initiating sell flow with Quantity {} getSecurityName {} RequesterPartyName {}", securityOrder.getQuantity(), securityOrder.getSecurityName(), requesterPartyName);
             flowHandle = rpc.getProxy().startTrackedFlowDynamic(DepositoryExternalSellFlow.class, securityOrder.getQuantity(), securityOrder.getSecurityName(), requesterPartyName);
         }
 

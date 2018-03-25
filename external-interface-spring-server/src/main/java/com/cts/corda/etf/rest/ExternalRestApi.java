@@ -3,11 +3,14 @@ package com.cts.corda.etf.rest;
 import com.cts.corda.etf.cordainteface.NodeRPCConnection;
 import com.cts.corda.etf.services.OrderSender;
 import com.cts.corda.etf.util.CashIssueOrder;
+import com.cts.corda.etf.util.Constants;
 import kotlin.collections.CollectionsKt;
 import lombok.extern.slf4j.Slf4j;
 import net.corda.core.contracts.Amount;
 import net.corda.core.identity.CordaX500Name;
 import net.corda.core.identity.Party;
+import org.apache.activemq.ActiveMQConnectionFactory;
+import org.apache.activemq.command.ActiveMQQueue;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -16,8 +19,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.Currency;
-import java.util.Map;
+import javax.jms.*;
+import javax.jms.Queue;
+import java.util.*;
 
 @RestController
 @RequestMapping("/transaction")
@@ -59,5 +63,30 @@ public class ExternalRestApi {
     @RequestMapping("/sendSecurityOrder")
     public void sendSecurityOrder(@RequestParam(value = "message") String message) {
         orderSender.send(message);
+    }
+
+
+    @GetMapping(produces = {"text/plain"}, value = {"/messages"})
+    public final String getCordaNetworkMessages() throws JMSException {
+        log.info("getCordaNetworkMessages");
+        ActiveMQConnectionFactory connectionFactory = new ActiveMQConnectionFactory("vm://localhost:61616?broker.persistent=true,useShutdownHook=false");
+        Connection connection = connectionFactory.createConnection();
+        connection.start();
+        Session session = connection.createSession(false, Session.AUTO_ACKNOWLEDGE);
+        ActiveMQQueue destination = new ActiveMQQueue(Constants.ORDER_QUEUE);
+        QueueBrowser browser = session.createBrowser((Queue) destination);
+        Enumeration enumeration = browser.getEnumeration();
+        log.info("enumeration.hasMoreElements() --> "+enumeration.hasMoreElements());
+        List<String> messages = new ArrayList<>();
+        while (enumeration.hasMoreElements()) {
+            TextMessage msg = (TextMessage) enumeration.nextElement();
+            messages.add(msg.getText());
+        }
+
+        browser.close();
+        if (messages.size() > 0)
+            return messages.get(0);
+        else
+            return "NoMessage";
     }
 }
