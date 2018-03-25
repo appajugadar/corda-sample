@@ -5,6 +5,9 @@ repositories {
     maven { url 'https://dl.bintray.com/kotlin/exposed' }
     maven { url 'https://jitpack.io' }
     maven { url 'https://ci-artifactory.corda.r3cev.com/artifactory/corda-releases' }
+    flatDir {
+        dirs 'lib'
+    }
 }
 
 apply plugin: 'java'
@@ -50,8 +53,9 @@ dependencies {
     cordaCompile "org.projectlombok:lombok:1.16.20"
     cordaCompile "org.apache.activemq:activemq-broker:5.15.3"
     cordaCompile "com.fasterxml.jackson.core:jackson-databind:2.9.4"
+    compile name: 'pw-swift-core-SRU2017-7.9.3'
+    compile "net.corda:corda-test-utils:2.0.0"
     testCompile "$corda_release_group:corda-node-driver:$corda_release_version"
-
     // CorDapp dependencies
     // Specify your cordapp's dependencies below, including dependent CorDapps
     cordapp "$corda_release_group:corda-finance:$corda_release_version"

@@ -43,8 +43,10 @@ public class SellContract implements Contract {
             require.using("Only one output state should be created.",
                     tx.getOutputs().size() == 1);
             final SecuritySellState out = tx.outputsOfType(SecuritySellState.class).get(0);
-            require.using("The seller and the depository cannot be the same entity.",
+            log.info("Seller {} Buyer {}", out.getSeller(), out.getBuyer());
+            require.using("The seller and the buyer cannot be the same entity.",
                     out.getSeller() != out.getBuyer());
+
             require.using("All of the participants must be signers.",
                     command.getSigners().containsAll(out.getParticipants().stream().map(AbstractParty::getOwningKey).collect(Collectors.toList())));
 

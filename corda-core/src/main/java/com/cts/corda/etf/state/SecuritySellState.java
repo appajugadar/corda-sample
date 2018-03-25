@@ -1,6 +1,6 @@
 package com.cts.corda.etf.state;
 
-import com.cts.corda.etf.schema.SellSchemaV1;
+import com.cts.corda.etf.schema.*;
 import com.google.common.collect.ImmutableList;
 import lombok.Getter;
 import lombok.Setter;
@@ -12,11 +12,13 @@ import net.corda.core.identity.Party;
 import net.corda.core.schemas.MappedSchema;
 import net.corda.core.schemas.PersistentState;
 import net.corda.core.schemas.QueryableState;
+import net.corda.core.serialization.CordaSerializable;
 
 import java.util.Arrays;
 import java.util.List;
 
 @Slf4j
+@CordaSerializable
 public class SecuritySellState implements LinearState, QueryableState {
 
     private final UniqueIdentifier linearId;
@@ -70,7 +72,7 @@ public class SecuritySellState implements LinearState, QueryableState {
 
     @Override
     public List<AbstractParty> getParticipants() {
-        if(seller.getName().getOrganisation().contains("AP")){
+        if(seller !=null && seller.getName().getOrganisation().contains("AP")){
             return Arrays.asList(depository, seller);
         }else{
             return Arrays.asList(depository);

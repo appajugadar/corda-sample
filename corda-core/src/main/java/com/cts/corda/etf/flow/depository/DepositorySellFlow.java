@@ -1,11 +1,11 @@
 package com.cts.corda.etf.flow.depository;
 
 import co.paralleluniverse.fibers.Suspendable;
-import com.cts.corda.etf.contract.BuyContract;
+import com.cts.corda.etf.contract.*;
 import com.cts.corda.etf.flow.sell.APSellFlow;
 import com.cts.corda.etf.state.SecurityBuyState;
 import com.cts.corda.etf.state.SecuritySellState;
-import com.cts.corda.etf.util.RequestHelper;
+import com.cts.corda.etf.util.*;
 import com.google.common.collect.Sets;
 import lombok.extern.slf4j.Slf4j;
 import net.corda.core.contracts.Command;
@@ -22,7 +22,7 @@ import net.corda.core.utilities.ProgressTracker;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static com.cts.corda.etf.util.Constants.BUY_MATCHED;
+
 import static net.corda.core.contracts.ContractsDSL.requireThat;
 
 
@@ -59,7 +59,7 @@ public class DepositorySellFlow extends FlowLogic<SignedTransaction> {
         if (securityBuyState != null && !securityBuyState.getBuyer().equals(flowSession.getCounterparty())) {
             //update sell state
             securityBuyState.setSeller(flowSession.getCounterparty());
-            securityBuyState.setStatus(BUY_MATCHED);
+            securityBuyState.setStatus(Constants.BUY_MATCHED);
 
             // Obtain a reference to the notary we want to use.
             final Party notary = getServiceHub().getNetworkMapCache().getNotaryIdentities().get(0);

@@ -5,7 +5,9 @@ import com.cts.corda.etf.contract.SellContract;
 import com.cts.corda.etf.flow.buy.APBuyFlow;
 import com.cts.corda.etf.state.SecurityBuyState;
 import com.cts.corda.etf.state.SecuritySellState;
+import com.cts.corda.etf.util.JMSPublisher;
 import com.cts.corda.etf.util.RequestHelper;
+import com.cts.corda.etf.util.SwiftMessageHelper;
 import com.google.common.collect.Sets;
 import lombok.extern.slf4j.Slf4j;
 import net.corda.core.contracts.Command;
@@ -19,6 +21,7 @@ import net.corda.core.transactions.SignedTransaction;
 import net.corda.core.transactions.TransactionBuilder;
 import net.corda.core.utilities.ProgressTracker;
 
+import javax.jms.JMSException;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -68,6 +71,18 @@ public class DepositoryBuyFlow extends FlowLogic<SignedTransaction> {
             txBuilder.verify(getServiceHub());
             // Sign the transaction.
             final SignedTransaction partSignedTx = getServiceHub().signInitialTransaction(txBuilder);
+            log.info("Initiating flow for "+securitySellState.getSeller());
+
+            if(!securitySellState.getSeller().getName().getOrganisation().contains("AP")){
+                //send message on queue ??
+                try {
+                    String message = SwiftMessageHelper.createSwiftMessage("FOOSEDR0AXXX", securitySellState.getLinearId().toString());
+                    JMSPublisher.sendMessage(message,"order-queue");
+                } catch (JMSException e) {
+                    e.printStackTrace();
+                }
+            }
+
             FlowSession sellerSession = initiateFlow(securitySellState.getSeller());
             final SignedTransaction fullySignedTx = subFlow(new CollectSignaturesFlow(partSignedTx, Sets.newHashSet(sellerSession), CollectSignaturesFlow.Companion.tracker()));
             // Notarise and record the transaction in both parties' vaults.
