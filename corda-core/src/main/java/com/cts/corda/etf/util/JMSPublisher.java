@@ -10,7 +10,7 @@ public class JMSPublisher {
 
     static public void sendMessage(String message, String queueName) throws JMSException {
         //ActiveMQConnectionFactory connectionFactory = new ActiveMQConnectionFactory("vm://localhost:61616?broker.persistent=true,useShutdownHook=false");
-        ActiveMQConnectionFactory connectionFactory = new ActiveMQConnectionFactory("tcp://DESKTOP-7M2VMIM:61616");
+        ActiveMQConnectionFactory connectionFactory = new ActiveMQConnectionFactory("tcp://localhost:61616");
 
         Connection connection=null;
         try {
