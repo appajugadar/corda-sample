@@ -1,5 +1,5 @@
 
-GUI URL  
+**GUI URL**  
 
 AP1  :   http://localhost:10007/web/example/index.html
 
@@ -11,7 +11,7 @@ Regulator  :  http://localhost:10016/web/example/index.html
 
 Rest API URLS
 
-Buyer
+**Buyer**
 
 http://localhost:10007/api/rest/self-issue-cash?amount=100&currency=GBP
 
@@ -26,7 +26,8 @@ http://localhost:10007/api/rest/security-balance
 
 
 
-Seller
+**Seller**
+
 
 http://localhost:10010/api/rest/self-issue-security?quantity=100&securityName=GLD
 
@@ -42,21 +43,21 @@ http://localhost:10010/api/rest/cash-balance
 
 
 
-Depository
+**Depository**
 
 http://localhost:10013/api/rest/SellRequests
 
 http://localhost:10013/api/rest/BuyRequests
 
 
-Regulator
+**Regulator**
 
 http://localhost:10016/api/rest/SellRequests
 
 http://localhost:10016/api/rest/BuyRequests
 
 
---CP Flow
+**--CP Flow**
 
 http://localhost:10007/api/rest/self-issue-cp?quantity=100&currency=GBP
 
@@ -67,18 +68,19 @@ http://localhost:10007/api/rest/move-cp?receiverPartyName=AP2
 http://localhost:10010/api/rest/cp-balance
 
 
-JVM Param for testcase
+**JVM Param for testcase**
 
 -ea -javaagent:../lib/quasar.jar
 
 
-Send swift message
+**Send swift message**
+
 http://localhost:8080/send_swift.html
 
 Sample swift message : https://github.com/appajugadar/corda-sample/blob/master/swift-sample.txt
 
 
-Setting up ActiveMQ 
+**Setting up ActiveMQ** 
 
 Download installation from here : http://activemq.apache.org/download.html
 
